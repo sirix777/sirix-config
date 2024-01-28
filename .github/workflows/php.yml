@@ -16,6 +16,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - uses: nanasess/setup-php@v4
+      with:
+        php-version: '8.3'
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
