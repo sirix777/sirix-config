@@ -1,29 +1,27 @@
 {
     "name": "sirix/sirix-config",
-    "type": "library",
-    "homepage": "https://github.com/sirix777",
     "description": "Utils to load, parse and work with configuration on Mezzio projects",
     "license": "MIT",
+    "type": "library",
     "authors": [
         {
             "name": "Sirix",
             "homepage": "https://github.com/sirix777"
         }
     ],
+    "homepage": "https://github.com/sirix777",
     "require": {
         "php": "^8.3",
         "cuyz/valinor": "^1.7",
-        "laminas/laminas-config": "^3.9",
-        "laminas/laminas-servicemanager": "^3.22"
+        "laminas/laminas-servicemanager": "^3.22 || ^4.2",
+        "laminas/laminas-stdlib": "^3.20"
     },
     "require-dev": {
         "devster/ubench": "^2.1",
-        "infection/infection": "^0.27.7",
-        "phpstan/phpstan": "^1.10",
-        "phpunit/phpunit": "^10.4",
+        "ergebnis/composer-normalize": "^2.39",
+        "phpunit/phpunit": "^12.0",
         "psr/simple-cache": "^2.0",
         "roave/security-advisories": "dev-master",
-        "laminas/laminas-coding-standard": "~2.5.0",
         "symfony/var-dumper": "^6.3"
     },
     "autoload": {
@@ -39,51 +37,59 @@
             "SirixTest\\Config\\": "test"
         }
     },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "infection/extension-installer": true
+        },
+        "sort-packages": true
+    },
     "extra": {
         "laminas": {
             "config-provider": "Sirix\\Config\\ConfigProvider"
         }
     },
     "scripts": {
+        "post-install-cmd": [
+            "if [ ! -d \"tools/php-cs-fixer/vendor\" ]; then composer install --working-dir=tools/php-cs-fixer; fi",
+            "if [ ! -d \"tools/phpstan/vendor\" ]; then composer install --working-dir=tools/phpstan; fi"
+        ],
+        "post-update-cmd": [
+            "composer update --working-dir=tools/php-cs-fixer;",
+            "composer update --working-dir=tools/phpstan;"
+        ],
         "check": [
             "@cs-check",
             "@phpstan",
             "@test"
         ],
-        "cs-check": "phpcs",
-        "cs-fix": "phpcbf",
-        "phpstan": "phpstan analyse src functions --level=8",
-        "test": "phpunit --order-by=random --testdox --colors=always",
-        "test-ci": "@test --coverage-clover=build/clover.xml --coverage-xml=build/coverage-xml --log-junit=build/junit.xml",
-        "test-pretty": "@test --coverage-html build/coverage-html",
+        "cs-check": "export PHP_CS_FIXER_IGNORE_ENV=1 && php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix -vvv --dry-run --diff",
+        "cs-fix": "export PHP_CS_FIXER_IGNORE_ENV=1 && php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix -vvv",
         "infect": "infection --threads=max --min-msi=85 --log-verbosity=default --only-covered",
         "infect-ci": "@infect --coverage=build --skip-initial-tests",
         "infect-show": "@infect --show-mutations",
         "infect-show-ci": "@infect --show-mutations --coverage=build",
+        "phpstan": "php tools/phpstan/vendor/bin/phpstan analyse src functions --level=8",
+        "test": "phpunit --order-by=random --testdox --colors=always",
+        "test-ci": "@test --coverage-clover=build/clover.xml --coverage-xml=build/coverage-xml --log-junit=build/junit.xml",
         "test-infect": [
             "@test-ci",
             "@infect-show-ci"
-        ]
+        ],
+        "test-pretty": "@test --coverage-html build/coverage-html"
     },
     "scripts-descriptions": {
         "check": "<fg=blue;options=bold>Alias for \"cs-check\", \"phpstan\", \"test\" and \"infect\"</>",
         "cs-check": "<fg=blue;options=bold>Checks coding styles</>",
         "cs-fix": "<fg=blue;options=bold>Fixes coding styles, when possible</>",
-        "phpstan": "<fg=blue;options=bold>Inspects code with phpstan</>",
-        "test": "<fg=blue;options=bold>Runs unit tests with no coverage reports</>",
-        "test-ci": "<fg=blue;options=bold>Runs unit tests generating coverage reports and logs</>",
-        "test-pretty": "<fg=blue;options=bold>Runs unit tests generating coverage reports in html</>",
-        "test-infect": "<fg=blue;options=bold>Alias for \"test-ci\" and \"infect-show-ci\"</>",
         "infect": "<fg=blue;options=bold>Checks unit tests quality applying mutation testing</>",
         "infect-ci": "<fg=blue;options=bold>Checks unit tests quality applying mutation testing with existing reports and logs</>",
         "infect-show": "<fg=blue;options=bold>Checks unit tests quality applying mutation testing and shows applied mutators</>",
-        "infect-show-ci": "<fg=blue;options=bold>Checks unit tests quality applying mutation testing with existing reports and logs and shows applied mutators</>"
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "infection/extension-installer": true
-        }
+        "infect-show-ci": "<fg=blue;options=bold>Checks unit tests quality applying mutation testing with existing reports and logs and shows applied mutators</>",
+        "phpstan": "<fg=blue;options=bold>Inspects code with phpstan</>",
+        "test": "<fg=blue;options=bold>Runs unit tests with no coverage reports</>",
+        "test-ci": "<fg=blue;options=bold>Runs unit tests generating coverage reports and logs</>",
+        "test-infect": "<fg=blue;options=bold>Alias for \"test-ci\" and \"infect-show-ci\"</>",
+        "test-pretty": "<fg=blue;options=bold>Runs unit tests generating coverage reports in html</>"
     }
 }

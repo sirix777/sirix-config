@@ -17,8 +17,8 @@ class ValinorConfigFactory
         /** @var ContainerInterface $container */
         /** @var string $serviceName */
         [$container, $serviceName] = $arguments;
-        $mapper                    = self::getMapper($container);
-        $options                   = $container->get($name);
+        $mapper = self::getMapper($container);
+        $options = $container->get($name);
 
         return $mapper->map($serviceName, Source::array($options)->camelCaseKeys());
     }
@@ -26,7 +26,7 @@ class ValinorConfigFactory
     private static function getMapper(ContainerInterface $container): TreeMapper
     {
         static $mapper;
-        if ($mapper !== null) {
+        if (null !== $mapper) {
             return $mapper;
         }
 

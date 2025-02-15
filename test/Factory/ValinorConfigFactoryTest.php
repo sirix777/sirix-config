@@ -33,11 +33,11 @@ class ValinorConfigFactoryTest extends TestCase
     {
         yield 'ignored keys' => [
             [
-                'foo'                  => 'the_value',
+                'foo' => 'the_value',
                 'this_will_be_ignored' => 'bar',
             ],
             'config',
-            function (FooModel $model): void {
+            function(FooModel $model): void {
                 self::assertEquals('the_value', $model->foo);
                 self::assertEquals(30, $model->withCamelCase);
                 self::assertFalse($model->bar);
@@ -45,28 +45,30 @@ class ValinorConfigFactoryTest extends TestCase
                 self::assertEmpty($model->listOfNumbers);
             },
         ];
+
         yield 'lists' => [
             [
-                'foo'           => 'bar',
-                'listOfStuff'   => ['foo', 'bar'],
+                'foo' => 'bar',
+                'listOfStuff' => ['foo', 'bar'],
                 'listOfNumbers' => [5.5, 8.3],
             ],
             'foo',
-            function (FooModel $model): void {
+            function(FooModel $model): void {
                 self::assertEquals('bar', $model->foo);
                 self::assertEquals(['foo', 'bar'], $model->listOfStuff);
                 self::assertEquals([5.5, 8.3], $model->listOfNumbers);
             },
         ];
+
         yield 'camelCase mapping' => [
             [
-                'foo'             => 'bar',
+                'foo' => 'bar',
                 'with_camel_case' => 200,
-                'list of stuff'   => ['foo', 'bar'],
+                'list of stuff' => ['foo', 'bar'],
                 'list-of-numbers' => [5.5, 8.3],
             ],
             'foo',
-            function (FooModel $model): void {
+            function(FooModel $model): void {
                 self::assertEquals('bar', $model->foo);
                 self::assertEquals(['foo', 'bar'], $model->listOfStuff);
                 self::assertEquals([5.5, 8.3], $model->listOfNumbers);
@@ -90,8 +92,11 @@ class ValinorConfigFactoryTest extends TestCase
     public static function provideInvalidConfig(): iterable
     {
         yield 'missing required prop' => [[]];
+
         yield 'invalid type' => [['foo' => 'bar', 'withCamelCase' => 'foo']];
+
         yield 'invalid list type' => [['foo' => 'bar', 'listOfStuff' => 'foo']];
+
         yield 'invalid list inner type' => [['foo' => 'bar', 'listOfStuff' => [true, false, 1]]];
     }
 }

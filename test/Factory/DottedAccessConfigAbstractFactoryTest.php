@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SirixTest\Shlink\Config\Factory;
+namespace SirixTest\Config\Factory;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\ServiceManager;
@@ -31,8 +31,11 @@ class DottedAccessConfigAbstractFactoryTest extends TestCase
     public static function provideDotNames(): iterable
     {
         yield 'with a valid service' => ['foo.bar', true];
+
         yield 'with another valid service' => ['config.something', true];
+
         yield 'with an invalid service' => ['config_something', false];
+
         yield 'with another invalid service' => ['foo', false];
     }
 
@@ -65,17 +68,21 @@ class DottedAccessConfigAbstractFactoryTest extends TestCase
     public static function provideNonArrayValues(): iterable
     {
         yield 'string' => ['string'];
+
         yield 'object' => [new stdClass()];
+
         yield 'true' => [true];
+
         yield 'false' => [false];
+
         yield 'number' => [100];
     }
 
     #[Test]
     public function dottedNotationIsRecursivelyResolvedUntilLastValueIsFoundAndReturned(): void
     {
-        $a  = new stdClass();
-        $b  = new stdClass();
+        $a = new stdClass();
+        $b = new stdClass();
         $sm = new ServiceManager([
             'services' => [
                 'foo' => [

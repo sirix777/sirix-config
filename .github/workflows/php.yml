@@ -15,37 +15,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3'
+      - uses: actions/checkout@v4
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v4
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+      - name: Install php-cs-fixer
+        run: composer install --working-dir=tools/php-cs-fixer
 
-    - name: Run cs-check
-      run: composer cs-check
+      - name: Install phpstan
+        run: composer install --working-dir=tools/phpstan
 
-    - name: Run phpstan
-      run: composer phpstan
+      - name: Run cs-check
+        run: composer cs-check
 
-    - name: Run phpunit
-      run: composer test
+      - name: Run phpstan
+        run: composer phpstan
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
-
-    # - name: Run test suite
-    #   run: composer run-script test
+      - name: Run phpunit
+        run: composer test

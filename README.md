@@ -2,6 +2,10 @@
 
 Utils to load, parse and work with configuration on Mezzio projects.
 
+This library is **based on** the [`shlinkio/shlink-config`](https://github.com/shlinkio/shlink-config) project, with some modifications and extensions for our specific requirements.
+
+---
+
 ## Installation
 
 Install this tool using [composer](https://getcomposer.org/).

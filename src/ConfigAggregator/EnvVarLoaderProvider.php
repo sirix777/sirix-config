@@ -10,15 +10,13 @@ use function Sirix\Config\putNotYetDefinedEnv;
 
 readonly class EnvVarLoaderProvider
 {
-    public function __construct(private string $configPath, private ?array $allowedEnvVars = null)
-    {
-    }
+    public function __construct(private string $configPath, private ?array $allowedEnvVars = null) {}
 
     public function __invoke(): array
     {
         $config = loadConfigFromGlob($this->configPath);
         foreach ($config as $envVar => $value) {
-            if ($this->allowedEnvVars !== null && ! in_array($envVar, $this->allowedEnvVars, true)) {
+            if (null !== $this->allowedEnvVars && ! in_array($envVar, $this->allowedEnvVars, true)) {
                 continue;
             }
 
