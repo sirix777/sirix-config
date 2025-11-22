@@ -23,14 +23,11 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: Install php-cs-fixer
-        run: composer install --working-dir=tools/php-cs-fixer
-
-      - name: Install phpstan
-        run: composer install --working-dir=tools/phpstan
-
       - name: Run cs-check
         run: composer cs-check
+
+      - name: Run rector
+        run: composer rector
 
       - name: Run phpstan
         run: composer phpstan

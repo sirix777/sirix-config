@@ -24,7 +24,6 @@ class DottedAccessConfigAbstractFactory implements AbstractFactoryInterface
      *
      * @todo Add native type when servicemanager 3 is no longer supported
      */
-    // phpcs:ignore
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): mixed
     {
         $parts = explode('.', $requestedName);
@@ -78,8 +77,8 @@ class DottedAccessConfigAbstractFactory implements AbstractFactoryInterface
         }
 
         $value = $array[$key];
-        if (! empty($keys) && (is_array($value) || $value instanceof ArrayAccess)) {
-            $value = $this->readKeysFromArray($keys, $value);
+        if ([] !== $keys && (is_array($value) || $value instanceof ArrayAccess)) {
+            return $this->readKeysFromArray($keys, $value);
         }
 
         return $value;

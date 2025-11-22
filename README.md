@@ -19,7 +19,7 @@ Install this tool using [composer](https://getcomposer.org/).
 * `loadConfigFromGlob`: Function which expects a glob pattern and loads and merges all config files that match it.
 * `EnvVarLoaderProvider`: A config provider which loads the entries of the loaded config into env vars and always returns empty. Designed to be the first config provider in the pipeline.
 * `DottedAccessConfigAbstractFactory`: An abstract factory that lets any config param to be fetched as a service by using the `config.foo.bar` notation.
-* `ValinorConfigFactory`: A PSR-11 factory that lets you map arbitrary objects from arrays, using [cuyz/valinior](https://github.com/CuyZ/Valinor).
+* `ValinorConfigFactory`: A PSR-11 factory that lets you map arbitrary objects from arrays, using [cuyz/valinor](https://github.com/CuyZ/Valinor).
 
     In order to use it, you have to register the object to map as a service, and the ValinorConfigFactory with static access using the service that returns the raw array with the data as the static method name:
 
@@ -35,4 +35,28 @@ Install this tool using [composer](https://getcomposer.org/).
 
     It is useful to combine this factory with the `DottedAccessConfigAbstractFactory`.
 
-    The mapping will be done with cache if a `Psr\SimpleCache\CacheInterface` service is found.
+### Valinor cache configuration
+
+`ValinorConfigFactory` supports an optional filesystem cache, configurable under the `sirix_config.valinor` key in your application config. Options:
+
+- `cache` (bool): Enable/disable Valinor mapping cache. Default: `false`.
+- `cache_directory` (string): Directory where cache files are stored. Default: `data/cache/valinor`.
+- `development_mode` (bool): When `true`, enables file-watching cache to auto‑invalidate entries when source files change. Default: `false`.
+
+Example config:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+return [
+    'sirix_config' => [
+        'valinor' => [
+            'cache' => true,
+            'cache_directory' => 'data/cache/valinor',
+            'development_mode' => true,
+        ],
+    ],
+];
+```

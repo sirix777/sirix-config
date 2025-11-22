@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Sirix\Config\Factory;
 
+use CuyZ\Valinor\Cache\FileSystemCache;
+use CuyZ\Valinor\Cache\FileWatchingCache;
 use CuyZ\Valinor\Mapper\Source\Source;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use CuyZ\Valinor\MapperBuilder;
 use Psr\Container\ContainerInterface;
-use Psr\SimpleCache\CacheInterface;
 
 class ValinorConfigFactory
 {
+    private const DEFAULT_CACHE_DIR = 'data/cache/valinor';
+
     public static function __callStatic(string $name, array $arguments): mixed
     {
         /** @var ContainerInterface $container */
@@ -30,9 +33,27 @@ class ValinorConfigFactory
             return $mapper;
         }
 
+        $config = $container->has('config') ? $container->get('config') : [];
+
+        $isCacheEnabled = false;
+        $isDevModeEnabled = false;
+        $cacheDirectory = self::DEFAULT_CACHE_DIR;
+
+        if (isset($config['sirix_config']['valinor'])) {
+            $isCacheEnabled = $config['sirix_config']['valinor']['cache'] ?? false;
+            $cacheDirectory = $config['sirix_config']['valinor']['cache_directory'] ?? self::DEFAULT_CACHE_DIR;
+            $isDevModeEnabled = $config['sirix_config']['valinor']['development_mode'] ?? false;
+        }
+
         $mapper = (new MapperBuilder())->allowSuperfluousKeys();
-        if ($container->has(CacheInterface::class)) {
-            return $mapper = $mapper->withCache($container->get(CacheInterface::class))->mapper();
+        if ($isCacheEnabled) {
+            $cache = new FileSystemCache($cacheDirectory);
+
+            if ($isDevModeEnabled) {
+                $cache = new FileWatchingCache($cache);
+            }
+
+            return $mapper = $mapper->withCache($cache)->mapper();
         }
 
         return $mapper = $mapper->mapper();
