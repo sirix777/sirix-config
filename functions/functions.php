@@ -2,109 +2,135 @@
 
 declare(strict_types=1);
 
-namespace Sirix\Config;
-
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Stdlib\Glob;
 
-use function file_exists;
-use function getenv;
-use function implode;
-use function in_array;
-use function is_array;
-use function is_numeric;
-use function is_scalar;
-use function putenv;
-use function sprintf;
-use function str_ends_with;
-use function strtolower;
-use function trim;
+if (! \function_exists('loadConfigFromGlob')) {
+    function loadConfigFromGlob(string $globPattern): array
+    {
+        $config = [];
+        $files  = Glob::glob($globPattern, Glob::GLOB_BRACE);
 
-function loadConfigFromGlob(string $globPattern): array
-{
-    $config = [];
-    $files  = Glob::glob($globPattern, Glob::GLOB_BRACE);
+        foreach ($files as $file) {
+            if (! str_ends_with($file, '.php') || ! file_exists($file)) {
+                continue;
+            }
 
-    foreach ($files as $file) {
-        if (! str_ends_with($file, '.php') || ! file_exists($file)) {
-            continue;
+            $config = ArrayUtils::merge($config, include $file);
         }
 
-        $config = ArrayUtils::merge($config, include $file);
+        return $config;
     }
-
-    return $config;
 }
 
-function env(string $key, mixed $default = null): mixed
-{
-    $value = getenv($key);
+if (! \function_exists('env')) {
+    function env(string $key, mixed $default = null, ?string $type = null): mixed
+    {
+        $value = getenv($key);
 
-    return $value === false ? $default : parseEnvVar($value);
-}
-
-function parseEnvVar(string $value): string|int|bool|null
-{
-    $trimmedValue = trim($value);
-    return match (strtolower($trimmedValue)) {
-        'true', '(true)' => true,
-        'false', '(false)' => false,
-        'empty', '(empty)' => '',
-        'null', '(null)' => null,
-        default => is_numeric($trimmedValue) ? (int) $trimmedValue : $trimmedValue,
-    };
-}
-
-/**
- * @param string|string[]|int|int[]|bool|null $value
- */
-function formatEnvVarValueOrNull(string|int|bool|array|null $value): string|null
-{
-    $isArray = is_array($value);
-    if (! $isArray && ! is_scalar($value)) {
-        return null;
-    }
-
-    return $isArray ? implode(',', $value) : match ($value) {
-        true => 'true',
-        false => 'false',
-        default => (string) $value,
-    };
-}
-
-/**
- * @param string|string[]|int|int[]|bool|null $value
- */
-function formatEnvVarValue(string|int|bool|array|null $value): string
-{
-    return formatEnvVarValueOrNull($value) ?? '';
-}
-
-/**
- * Loads config from $configPath, then puts all its values as env vars if they are not yet defined
- */
-function loadEnvVarsFromConfig(string $configPath, array|null $allowedEnvVars = null): void
-{
-    $config = loadConfigFromGlob($configPath);
-    foreach ($config as $envVar => $value) {
-        if ($allowedEnvVars !== null && ! in_array($envVar, $allowedEnvVars, true)) {
-            continue;
+        if ($value === false) {
+            return $default;
         }
 
-        putNotYetDefinedEnv($envVar, $value);
+        if ($type !== null) {
+            return castEnvValue($value, $type);
+        }
+
+        return parseEnvVar($value);
     }
 }
 
-function putNotYetDefinedEnv(string $key, mixed $value): void
-{
-    if (env($key) !== null) {
-        return;
-    }
+if (! \function_exists('castEnvValue')) {
+    function castEnvValue(string $value, string $type): mixed
+    {
+        $trimmedValue = trim($value);
 
-    $formattedValue = formatEnvVarValueOrNull($value);
-    if ($formattedValue === null) {
-        return;
+        return match (strtolower($type)) {
+            'int', 'integer' => (int) $trimmedValue,
+            'float', 'double' => (float) $trimmedValue,
+            'string' => $trimmedValue,
+            'bool', 'boolean' => match (strtolower($trimmedValue)) {
+                'true', '(true)', '1' => true,
+                default => false,
+            },
+            'array' => $trimmedValue === '' ? [] : explode(',', $trimmedValue),
+            default => parseEnvVar($value),
+        };
     }
+}
 
-    putenv(sprintf('%s=%s', $key, $formattedValue));
+if (! \function_exists('parseEnvVar')) {
+    function parseEnvVar(string $value): string|int|bool|null
+    {
+        $trimmedValue = trim($value);
+        return match (strtolower($trimmedValue)) {
+            'true', '(true)' => true,
+            'false', '(false)' => false,
+            'empty', '(empty)' => '',
+            'null', '(null)' => null,
+            default => is_numeric($trimmedValue) ? (int) $trimmedValue : $trimmedValue,
+        };
+    }
+}
+
+if (! \function_exists('formatEnvVarValueOrNull')) {
+    /**
+     * @param string|string[]|int|int[]|bool|null $value
+     */
+    function formatEnvVarValueOrNull(string|int|bool|array|null $value): string|null
+    {
+        $isArray = is_array($value);
+        if (! $isArray && ! is_scalar($value)) {
+            return null;
+        }
+
+        return $isArray ? implode(',', $value) : match ($value) {
+            true => 'true',
+            false => 'false',
+            default => (string) $value,
+        };
+    }
+}
+
+if (! \function_exists('formatEnvVarValue')) {
+    /**
+     * @param string|string[]|int|int[]|bool|null $value
+     */
+    function formatEnvVarValue(string|int|bool|array|null $value): string
+    {
+        return formatEnvVarValueOrNull($value) ?? '';
+    }
+}
+
+if (! \function_exists('loadEnvVarsFromConfig')) {
+    /**
+     * Loads config from $configPath, then puts all its values as env vars if they are not yet defined
+     */
+    function loadEnvVarsFromConfig(string $configPath, array|null $allowedEnvVars = null): void
+    {
+        $config = loadConfigFromGlob($configPath);
+        foreach ($config as $envVar => $value) {
+            if ($allowedEnvVars !== null && ! in_array($envVar, $allowedEnvVars, true)) {
+                continue;
+            }
+
+            putNotYetDefinedEnv($envVar, $value);
+        }
+    }
+}
+
+if (! \function_exists('putNotYetDefinedEnv')) {
+    function putNotYetDefinedEnv(string $key, mixed $value): void
+    {
+        if (env($key) !== null) {
+            return;
+        }
+
+        $formattedValue = formatEnvVarValueOrNull($value);
+        if ($formattedValue === null) {
+            return;
+        }
+
+        putenv(sprintf('%s=%s', $key, $formattedValue));
+    }
 }

@@ -3,6 +3,15 @@
     "description": "Utils to load, parse and work with configuration on Mezzio projects",
     "license": "MIT",
     "type": "library",
+    "keywords": [
+        "config",
+        "configuration",
+        "env",
+        "environment",
+        "mezzio",
+        "laminas",
+        "valinor"
+    ],
     "authors": [
         {
             "name": "Sirix",

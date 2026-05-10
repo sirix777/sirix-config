@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SirixTest\Shlink\Config\Functions;
+namespace SirixTest\Config\Functions;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+use function env;
 use function putenv;
-use function Sirix\Config\env;
 
 class EnvTest extends TestCase
 {
@@ -82,5 +82,62 @@ class EnvTest extends TestCase
         self::assertTrue(env('TRUE_VALUE_SPACES'));
         self::assertEquals('', env('EMPTY_VALUE_PARENTHESES_SPACES'));
         self::assertEquals(80, env('INT_VALUE_SPACES'));
+    }
+
+    #[Test]
+    public function typeCastingToInt(): void
+    {
+        self::assertSame(100, env('INT_VALUE', null, 'int'));
+        self::assertSame(100, env('INT_VALUE', null, 'integer'));
+    }
+
+    #[Test]
+    public function typeCastingToFloat(): void
+    {
+        self::assertSame(100.0, env('INT_VALUE', null, 'float'));
+        self::assertSame(58.68, env('NUMERIC_VALUE', null, 'float'));
+        self::assertSame(58.68, env('NUMERIC_VALUE', null, 'double'));
+    }
+
+    #[Test]
+    public function typeCastingToString(): void
+    {
+        self::assertSame('100', env('INT_VALUE', null, 'string'));
+        self::assertSame('true', env('TRUE_VALUE', null, 'string'));
+        self::assertSame('foo', env('REGULAR_VALUE', null, 'string'));
+    }
+
+    #[Test]
+    public function typeCastingToBool(): void
+    {
+        putenv('BOOL_TRUE=true');
+        putenv('BOOL_FALSE=false');
+        putenv('BOOL_ONE=1');
+        self::assertTrue(env('BOOL_TRUE', null, 'bool'));
+        self::assertTrue(env('BOOL_ONE', null, 'bool'));
+        self::assertTrue(env('BOOL_TRUE', null, 'boolean'));
+        self::assertFalse(env('BOOL_FALSE', null, 'bool'));
+        self::assertFalse(env('INT_VALUE', null, 'bool'));
+        putenv('BOOL_TRUE');
+        putenv('BOOL_FALSE');
+        putenv('BOOL_ONE');
+    }
+
+    #[Test]
+    public function typeCastingToArray(): void
+    {
+        putenv('COMMA_VALUES=foo,bar,baz');
+        putenv('EMPTY_ARRAY=');
+        self::assertSame(['foo', 'bar', 'baz'], env('COMMA_VALUES', null, 'array'));
+        self::assertSame([], env('EMPTY_ARRAY', null, 'array'));
+        putenv('COMMA_VALUES');
+        putenv('EMPTY_ARRAY');
+    }
+
+    #[Test]
+    public function typeCastingReturnsDefaultForUndefinedEnv(): void
+    {
+        self::assertSame(42, env('UNDEFINED_ENV', 42, 'int'));
+        self::assertSame(['a', 'b'], env('UNDEFINED_ENV', ['a', 'b'], 'array'));
     }
 }

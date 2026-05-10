@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Sirix\Config\ConfigAggregator;
 
 use function in_array;
-use function Sirix\Config\loadConfigFromGlob;
-use function Sirix\Config\putNotYetDefinedEnv;
+use function loadConfigFromGlob;
+use function putNotYetDefinedEnv;
 
 readonly class EnvVarLoaderProvider
 {

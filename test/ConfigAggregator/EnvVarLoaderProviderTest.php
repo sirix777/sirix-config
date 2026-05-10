@@ -8,9 +8,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sirix\Config\ConfigAggregator\EnvVarLoaderProvider;
 
+use function env;
 use function getenv;
 use function putenv;
-use function Sirix\Config\env;
 
 class EnvVarLoaderProviderTest extends TestCase
 {
