@@ -1,4 +1,5 @@
 # Sirix config
+[![Latest Stable Version](http://poser.pugx.org/sirix/sirix-config/v)](https://packagist.org/packages/sirix/sirix-config) [![Total Downloads](http://poser.pugx.org/sirix/sirix-config/downloads)](https://packagist.org/packages/sirix/sirix-config) [![Latest Unstable Version](http://poser.pugx.org/sirix/sirix-config/v/unstable)](https://packagist.org/packages/sirix/sirix-config) [![License](http://poser.pugx.org/sirix/sirix-config/license)](https://packagist.org/packages/sirix/sirix-config) [![PHP Version Require](http://poser.pugx.org/sirix/sirix-config/require/php)](https://packagist.org/packages/sirix/sirix-config)
 
 Utils to load, parse and work with configuration on Mezzio projects.
 
