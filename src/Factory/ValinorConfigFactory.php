@@ -20,8 +20,8 @@ class ValinorConfigFactory
         /** @var ContainerInterface $container */
         /** @var string $serviceName */
         [$container, $serviceName] = $arguments;
-        $mapper = self::getMapper($container);
-        $options = $container->get($name);
+        $mapper                    = self::getMapper($container);
+        $options                   = $container->get($name);
 
         return $mapper->map($serviceName, Source::array($options)->camelCaseKeys());
     }
@@ -35,13 +35,13 @@ class ValinorConfigFactory
 
         $config = $container->has('config') ? $container->get('config') : [];
 
-        $isCacheEnabled = false;
+        $isCacheEnabled   = false;
         $isDevModeEnabled = false;
-        $cacheDirectory = self::DEFAULT_CACHE_DIR;
+        $cacheDirectory   = self::DEFAULT_CACHE_DIR;
 
         if (isset($config['sirix_config']['valinor'])) {
-            $isCacheEnabled = $config['sirix_config']['valinor']['cache'] ?? false;
-            $cacheDirectory = $config['sirix_config']['valinor']['cache_directory'] ?? self::DEFAULT_CACHE_DIR;
+            $isCacheEnabled   = $config['sirix_config']['valinor']['cache'] ?? false;
+            $cacheDirectory   = $config['sirix_config']['valinor']['cache_directory'] ?? self::DEFAULT_CACHE_DIR;
             $isDevModeEnabled = $config['sirix_config']['valinor']['development_mode'] ?? false;
         }
 

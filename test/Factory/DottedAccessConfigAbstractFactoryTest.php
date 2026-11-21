@@ -81,8 +81,8 @@ class DottedAccessConfigAbstractFactoryTest extends TestCase
     #[Test]
     public function dottedNotationIsRecursivelyResolvedUntilLastValueIsFoundAndReturned(): void
     {
-        $a = new stdClass();
-        $b = new stdClass();
+        $a  = new stdClass();
+        $b  = new stdClass();
         $sm = new ServiceManager([
             'services' => [
                 'foo' => [
@@ -109,7 +109,9 @@ class DottedAccessConfigAbstractFactoryTest extends TestCase
         $this->factory->__invoke(new ServiceManager([
             'services' => [
                 'foo' => [
-                    'bar' => ['something' => 123],
+                    'bar' => [
+                        'something' => 123,
+                    ],
                 ],
             ],
         ]), 'foo.bar.baz');
