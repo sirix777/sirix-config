@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [3.1.0] - 2026-11-21
+
+### Changed
+
+- Supported PHP window is now 8.3–8.6 (PHP 8.2 is no longer supported, PHP 8.6 added).
+- CI runs the full check suite on PHP 8.3, 8.4, 8.5 and 8.6.
+- Code style brought in line with the current PHP CS Fixer ruleset (no behavior changes).
+- PHPUnit (dev) raised to `^12.5`.
+- Rector level set raised to `UP_TO_PHP_83`; internal class constant now uses a typed declaration.
+
 ## [3.0.0] - 2026-05-10
 
 ### Changed

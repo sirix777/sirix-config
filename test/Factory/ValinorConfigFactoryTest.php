@@ -33,7 +33,7 @@ class ValinorConfigFactoryTest extends TestCase
     {
         yield 'ignored keys' => [
             [
-                'foo' => 'the_value',
+                'foo'                  => 'the_value',
                 'this_will_be_ignored' => 'bar',
             ],
             'config',
@@ -48,8 +48,8 @@ class ValinorConfigFactoryTest extends TestCase
 
         yield 'lists' => [
             [
-                'foo' => 'bar',
-                'listOfStuff' => ['foo', 'bar'],
+                'foo'           => 'bar',
+                'listOfStuff'   => ['foo', 'bar'],
                 'listOfNumbers' => [5.5, 8.3],
             ],
             'foo',
@@ -62,9 +62,9 @@ class ValinorConfigFactoryTest extends TestCase
 
         yield 'camelCase mapping' => [
             [
-                'foo' => 'bar',
+                'foo'             => 'bar',
                 'with_camel_case' => 200,
-                'list of stuff' => ['foo', 'bar'],
+                'list of stuff'   => ['foo', 'bar'],
                 'list-of-numbers' => [5.5, 8.3],
             ],
             'foo',
@@ -93,10 +93,19 @@ class ValinorConfigFactoryTest extends TestCase
     {
         yield 'missing required prop' => [[]];
 
-        yield 'invalid type' => [['foo' => 'bar', 'withCamelCase' => 'foo']];
+        yield 'invalid type' => [[
+            'foo'           => 'bar',
+            'withCamelCase' => 'foo',
+        ]];
 
-        yield 'invalid list type' => [['foo' => 'bar', 'listOfStuff' => 'foo']];
+        yield 'invalid list type' => [[
+            'foo'         => 'bar',
+            'listOfStuff' => 'foo',
+        ]];
 
-        yield 'invalid list inner type' => [['foo' => 'bar', 'listOfStuff' => [true, false, 1]]];
+        yield 'invalid list inner type' => [[
+            'foo'         => 'bar',
+            'listOfStuff' => [true, false, 1],
+        ]];
     }
 }

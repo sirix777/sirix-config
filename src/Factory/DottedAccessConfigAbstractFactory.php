@@ -26,7 +26,7 @@ class DottedAccessConfigAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): mixed
     {
-        $parts = explode('.', $requestedName);
+        $parts       = explode('.', $requestedName);
         $serviceName = array_shift($parts);
         if (! $container->has($serviceName)) {
             throw new ServiceNotCreatedException(sprintf(
@@ -53,8 +53,7 @@ class DottedAccessConfigAbstractFactory implements AbstractFactoryInterface
      *
      * @todo Add native type when servicemanager 3 is no longer supported
      */
-    public function canCreate(ContainerInterface $container, $requestedName): bool // phpcs:ignore
-    
+    public function canCreate(ContainerInterface $container, $requestedName): bool
     {
         return str_contains($requestedName, '.');
     }
