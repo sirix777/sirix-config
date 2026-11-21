@@ -13,7 +13,7 @@ use Psr\Container\ContainerInterface;
 
 class ValinorConfigFactory
 {
-    private const DEFAULT_CACHE_DIR = 'data/cache/valinor';
+    private const string DEFAULT_CACHE_DIR = 'data/cache/valinor';
 
     public static function __callStatic(string $name, array $arguments): mixed
     {
